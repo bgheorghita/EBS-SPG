@@ -13,12 +13,12 @@ public class PublicationManager {
     }
 
     public void generatePublicationsWithThreadParallelization(int numberOfPublications, int maxThreadsToUse){
-        int maxPublicationsPerThread = numberOfPublications / maxThreadsToUse;
         int numOfCores = Runtime.getRuntime().availableProcessors();
         if(maxThreadsToUse > numOfCores){
             maxThreadsToUse = numOfCores;
             System.out.println("Info. Max threads has been set to the maximum of the available CPU cores.\n");
         }
+        int maxPublicationsPerThread = numberOfPublications / maxThreadsToUse;
 
         System.out.println("System CPU Cores: " + numOfCores);
         System.out.println("Threads Used: " + maxThreadsToUse);
