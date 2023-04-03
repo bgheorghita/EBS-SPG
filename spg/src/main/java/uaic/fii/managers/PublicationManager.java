@@ -1,16 +1,14 @@
 package uaic.fii.managers;
 
-import uaic.fii.generators.*;
+import uaic.fii.generators.publications.PublicationGenerator;
 import uaic.fii.models.Publication;
-import uaic.fii.models.Subscription;
-import uaic.fii.models.SubscriptionField;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class PublicationManager {
-    public List<Publication> generatePublicationsWithoutParallelization(int numberOfPublications) throws Exception {
+    public List<Publication> generatePublicationsWithoutParallelization(int numberOfPublications) {
         long startTime = System.currentTimeMillis();
         PublicationGenerator publicationGenerator = new PublicationGenerator(0, numberOfPublications);
         List<Publication> publications = publicationGenerator.call();
@@ -43,14 +41,14 @@ public class PublicationManager {
                 end = numberOfPublications;
             }
             System.out.println("thread " + thread + " range [" + start + " - " + end + ")");
-            Callable<List<Publication>> publicationCallable = new PublicationGenerator(start, end);
-            Future<List<Publication>> futurePublicationList = executor.submit(publicationCallable);
+            Callable<List<Publication>> publicationListCallable = new PublicationGenerator(start, end);
+            Future<List<Publication>> futurePublicationList = executor.submit(publicationListCallable);
             futurePublicationsList.add(futurePublicationList);
         }
 
-        for(Future<List<Publication>> futurePublication : futurePublicationsList){
+        for(Future<List<Publication>> publicationList : futurePublicationsList){
             try {
-                publications.addAll(futurePublication.get());
+                publications.addAll(publicationList.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }

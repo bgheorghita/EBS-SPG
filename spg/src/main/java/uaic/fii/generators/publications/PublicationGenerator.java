@@ -1,5 +1,9 @@
-package uaic.fii.generators;
+package uaic.fii.generators.publications;
 
+import uaic.fii.generators.CityGenerator;
+import uaic.fii.generators.DateGenerator;
+import uaic.fii.generators.DirectionGenerator;
+import uaic.fii.generators.NumberGenerator;
 import uaic.fii.models.Publication;
 import uaic.fii.models.PublicationField;
 
@@ -17,7 +21,7 @@ public class PublicationGenerator implements Callable<List<Publication>> {
     }
 
     @Override
-    public List<Publication> call() throws Exception {
+    public List<Publication> call() {
         List<Publication> publications = new ArrayList<>();
         for (int i = start; i < end; i++) {
             PublicationField stationIdField = new PublicationField("stationId", String.valueOf(NumberGenerator.getRandomInt(1, 10)));

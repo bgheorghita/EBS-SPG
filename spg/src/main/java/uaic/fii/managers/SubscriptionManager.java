@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class SubscriptionManager {
-    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) throws Exception {
+    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) {
         SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator(0, numberOfSubscriptions, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
         long startTime = System.currentTimeMillis();
         List<Subscription> subscriptions = subscriptionGenerator.call();
@@ -33,7 +33,7 @@ public class SubscriptionManager {
         System.out.println("Publications/Thread: " + maxSubscriptionsPerThread);
 
         ExecutorService executor = Executors.newFixedThreadPool(maxThreadsToUse);
-        List<Future<List<Subscription>>> partialSubscrptionList = new ArrayList<>();
+        List<Future<List<Subscription>>> futureSubscriptionsList = new ArrayList<>();
 
         long startTime = System.currentTimeMillis();
         for(int thread = 0; thread < maxThreadsToUse; thread ++){
@@ -43,15 +43,15 @@ public class SubscriptionManager {
                 end = numberOfSubscriptions;
             }
             System.out.println("thread " + thread + " range [" + start + " - " + end + ")");
-            Callable<List<Subscription>> subscriptionCallable = new SubscriptionGenerator(start, end, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
-            Future<List<Subscription>> subscriptionFuture = executor.submit(subscriptionCallable);
-            partialSubscrptionList.add(subscriptionFuture);
+            Callable<List<Subscription>> subscriptionListCallable = new SubscriptionGenerator(start, end, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
+            Future<List<Subscription>> futureSubscriptionList = executor.submit(subscriptionListCallable);
+            futureSubscriptionsList.add(futureSubscriptionList);
         }
         System.out.println();
 
-        for(Future<List<Subscription>> futureSubscriptionList : partialSubscrptionList){
+        for(Future<List<Subscription>> subscriptionList : futureSubscriptionsList){
             try {
-                subscriptions.addAll(futureSubscriptionList.get());
+                subscriptions.addAll(subscriptionList.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
