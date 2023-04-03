@@ -2,7 +2,9 @@ package uaic.fii.managers;
 
 import uaic.fii.generators.publications.PublicationGenerator;
 import uaic.fii.models.Publication;
+import uaic.fii.utils.Writer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -18,7 +20,7 @@ public class PublicationManager {
         return publications;
     }
 
-    public List<Publication> generatePublicationsWithThreadParallelization(int numberOfPublications, int maxThreadsToUse){
+    public List<Publication> generatePublicationsWithThreadParallelization(int numberOfPublications, int maxThreadsToUse) throws IOException {
         List<Publication> publications = new ArrayList<>();
         int numOfCores = Runtime.getRuntime().availableProcessors();
         if(maxThreadsToUse > numOfCores){
@@ -53,11 +55,20 @@ public class PublicationManager {
                 e.printStackTrace();
             }
         }
+
         executor.shutdown();
+        savePublicationsToFile(publications);
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
+
         System.out.println("Total time taken to generate " + numberOfPublications + " publications with thread parallelization: " + totalTime + " ms");
         return publications;
+    }
+
+    private void savePublicationsToFile(List<Publication> publications) throws IOException {
+        String filename = "publications.txt";
+        new Writer<Publication>().saveToFile(publications, filename);
+        System.out.println("Publications saved to file " + filename);
     }
 }

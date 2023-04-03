@@ -2,7 +2,9 @@ package uaic.fii.managers;
 
 import uaic.fii.generators.subscriptions.SubscriptionGenerator;
 import uaic.fii.models.Subscription;
+import uaic.fii.utils.Writer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -18,7 +20,7 @@ public class SubscriptionManager {
         return subscriptions;
     }
 
-    public List<Subscription> generateSubscriptionsWithThreadParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField, int maxThreadsToUse){
+    public List<Subscription> generateSubscriptionsWithThreadParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField, int maxThreadsToUse) throws IOException {
         List<Subscription> subscriptions = new ArrayList<>();
         int numOfCores = Runtime.getRuntime().availableProcessors();
         if(maxThreadsToUse > numOfCores){
@@ -58,9 +60,17 @@ public class SubscriptionManager {
         }
         executor.shutdown();
 
+        saveSubscriptionsToFile(subscriptions);
+
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Total time taken to generate " + subscriptions.size() + " subscription with thread parallelization: " + totalTime + " ms");
         return subscriptions;
+    }
+
+    private void saveSubscriptionsToFile(List<Subscription> subscriptions) throws IOException {
+        String filename = "subscriptions.txt";
+        new Writer<Subscription>().saveToFile(subscriptions, "subscriptions.txt");
+        System.out.println("Subscriptions saved to file " + filename);
     }
 }
