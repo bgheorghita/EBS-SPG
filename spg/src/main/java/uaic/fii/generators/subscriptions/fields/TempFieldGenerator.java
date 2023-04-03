@@ -1,27 +1,23 @@
 package uaic.fii.generators.subscriptions.fields;
 
 import uaic.fii.generators.NumberGenerator;
+import uaic.fii.generators.OperatorGenerator;
 import uaic.fii.models.SubscriptionField;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-public class TempFieldGenerator implements Callable<List<SubscriptionField>> {
+public class TempFieldGenerator {
+    private final int totalNumberOfTempFields;
 
-    private final int numberOfTempFields;
-    private final String operator;
-
-    public TempFieldGenerator(int numberOfTempFields, String operator) {
-        this.numberOfTempFields = numberOfTempFields;
-        this.operator = operator;
+    public TempFieldGenerator(int totalNumberOfTempFields) {
+        this.totalNumberOfTempFields = totalNumberOfTempFields;
     }
 
-    @Override
-    public List<SubscriptionField> call() throws Exception {
+    public List<SubscriptionField> generateTempFields() {
         List<SubscriptionField> list = new ArrayList<>();
-        for(int i=0; i<numberOfTempFields; i++){
-            list.add(new SubscriptionField("temp", String.valueOf(NumberGenerator.getRandomInt(-20, 40)), operator));
+        for(int i = 0; i< totalNumberOfTempFields; i++){
+            list.add(new SubscriptionField("temp", String.valueOf(NumberGenerator.getRandomInt(-20, 40)), OperatorGenerator.getRandomOperator()));
         }
         return list;
     }

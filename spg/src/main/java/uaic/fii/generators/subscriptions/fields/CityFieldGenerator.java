@@ -1,28 +1,41 @@
 package uaic.fii.generators.subscriptions.fields;
 
 import uaic.fii.generators.CityGenerator;
+import uaic.fii.generators.OperatorGenerator;
+import uaic.fii.models.Operator;
 import uaic.fii.models.SubscriptionField;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-public class CityFieldGenerator implements Callable<List<SubscriptionField>> {
+public class CityFieldGenerator {
+    private final int totalNumberOfCityFields;
+    private final double freqEqualOperator;
 
-    private final int numberOfCityFields;
-    private final String operator;
 
-    public CityFieldGenerator(int numberOfCityFields, String operator) {
-        this.numberOfCityFields = numberOfCityFields;
-        this.operator = operator;
+    public CityFieldGenerator(int totalNumberOfCityFields, double minFrequencyEqualOperator) {
+        this.totalNumberOfCityFields = totalNumberOfCityFields;
+        this.freqEqualOperator = minFrequencyEqualOperator;
     }
 
-    @Override
-    public List<SubscriptionField> call() throws Exception {
+    public List<SubscriptionField> generateCityFields() {
+        double numberOfCityFieldsWithEqualOperatorDouble = freqEqualOperator * totalNumberOfCityFields;
+        int numberOfCityFieldsWithEqualOperatorInt = (int) numberOfCityFieldsWithEqualOperatorDouble;
+        System.out.println("START City Fields Info");
+        System.out.println("Operators Lost And Replaced Due To Conversion: " + (numberOfCityFieldsWithEqualOperatorDouble - numberOfCityFieldsWithEqualOperatorInt));
+        System.out.println("Equal Operator Frequency For City Fields: " + freqEqualOperator);
+        System.out.println("END City Fields Info");
+
         List<SubscriptionField> list = new ArrayList<>();
-        for(int i=0; i< numberOfCityFields; i++){
-            list.add(new SubscriptionField("city", CityGenerator.getRandomCity(), operator));
+        for(int cityFieldIndex = 0; cityFieldIndex < numberOfCityFieldsWithEqualOperatorInt; cityFieldIndex++){
+            list.add(new SubscriptionField("city", CityGenerator.getRandomCity(), Operator.EQUAL.getSymbol()));
         }
+
+        int cityFieldsLeftToGenerate = totalNumberOfCityFields - numberOfCityFieldsWithEqualOperatorInt;
+        for(int cityFieldIndex = 0; cityFieldIndex < cityFieldsLeftToGenerate; cityFieldIndex++){
+            list.add(new SubscriptionField("city", CityGenerator.getRandomCity(), OperatorGenerator.getRandomOperator()));
+        }
+
         return list;
     }
 }

@@ -1,7 +1,8 @@
 package uaic.fii.generators.subscriptions;
 
-import uaic.fii.generators.CityGenerator;
-import uaic.fii.generators.NumberGenerator;
+import uaic.fii.generators.subscriptions.fields.CityFieldGenerator;
+import uaic.fii.generators.subscriptions.fields.TempFieldGenerator;
+import uaic.fii.generators.subscriptions.fields.WindFieldGenerator;
 import uaic.fii.models.Subscription;
 import uaic.fii.models.SubscriptionField;
 
@@ -15,13 +16,15 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
     private double cityFreq;
     private double tempFreq;
     private double windFreq;
+    private final double minFreqEqualOperatorForCityField;
 
-    public SubscriptionGenerator(int start, int end, double cityFreq, double tempFreq, double windFreq) {
+    public SubscriptionGenerator(int start, int end, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) {
         this.start = start;
         this.end = end;
         this.cityFreq = cityFreq;
         this.tempFreq = tempFreq;
         this.windFreq = windFreq;
+        this.minFreqEqualOperatorForCityField = minFreqEqualOperatorForCityField;
     }
 
     private List<Subscription> computeSubscriptions(List<SubscriptionField> cityFields, List<SubscriptionField> tempFields, List<SubscriptionField> windFields){
@@ -57,31 +60,6 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         return subscriptions;
     }
 
-
-    private List<SubscriptionField> generateCityFields(int numberOfCityFields, String operator){
-        List<SubscriptionField> list = new ArrayList<>();
-        for(int i=0; i< numberOfCityFields; i++){
-            list.add(new SubscriptionField("city", CityGenerator.getRandomCity(), operator));
-        }
-        return list;
-    }
-
-    private List<SubscriptionField> generateTempFields(int numberOfTempFields, String operator){
-        List<SubscriptionField> list = new ArrayList<>();
-        for(int i=0; i<numberOfTempFields; i++){
-            list.add(new SubscriptionField("temp", String.valueOf(NumberGenerator.getRandomInt(-20, 40)), operator));
-        }
-        return list;
-    }
-
-    private List<SubscriptionField> generateWindFields(int numberOfWindFields, String operator){
-        List<SubscriptionField> list = new ArrayList<>();
-        for(int i=0; i<numberOfWindFields; i++){
-            list.add(new SubscriptionField("wind", String.valueOf(NumberGenerator.getRandomInt(0, 100)), operator));
-        }
-        return list;
-    }
-
     @Override
     public List<Subscription> call() {
         checkFrequencies();
@@ -112,10 +90,11 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         double totalFieldsSizeDouble = numberOfCityFieldsToGenerate + numberOfTempFieldsToGenerate + numberOfWindFieldsToGenerate;
         int totalFieldsSizeInt = sizeOfCityFields + sizeOfTempFields + sizeOfWindFields;
         System.out.println("Fields Lost And Replaced Due To Conversion: " + (totalFieldsSizeDouble - totalFieldsSizeInt));
+        System.out.println();
 
-        cityFields = generateCityFields(sizeOfCityFields, "=");
-        tempFields = generateTempFields(sizeOfTempFields, ">");
-        windFields = generateWindFields(sizeOfWindFields, "<");
+        cityFields = new CityFieldGenerator(sizeOfCityFields, minFreqEqualOperatorForCityField).generateCityFields();
+        tempFields = new TempFieldGenerator(sizeOfTempFields).generateTempFields();
+        windFields = new WindFieldGenerator(sizeOfWindFields).generateWindFields();
         System.out.println();
         System.out.println("City Fields Generated: " + cityFields.size());
         System.out.println("Temp Fields Generated: " + tempFields.size());

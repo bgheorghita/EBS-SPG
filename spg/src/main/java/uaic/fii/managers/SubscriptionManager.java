@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class SubscriptionManager {
-    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq) throws Exception {
-        SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator(0, numberOfSubscriptions, cityFreq, tempFreq, windFreq);
+    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) throws Exception {
+        SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator(0, numberOfSubscriptions, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
         long startTime = System.currentTimeMillis();
         List<Subscription> subscriptions = subscriptionGenerator.call();
         long endTime = System.currentTimeMillis();
@@ -18,7 +18,7 @@ public class SubscriptionManager {
         return subscriptions;
     }
 
-    public List<Subscription> generateSubscriptionsWithThreadParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, int maxThreadsToUse){
+    public List<Subscription> generateSubscriptionsWithThreadParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField, int maxThreadsToUse){
         List<Subscription> subscriptions = new ArrayList<>();
         int numOfCores = Runtime.getRuntime().availableProcessors();
         if(maxThreadsToUse > numOfCores){
@@ -43,7 +43,7 @@ public class SubscriptionManager {
                 end = numberOfSubscriptions;
             }
             System.out.println("thread " + thread + " range [" + start + " - " + end + ")");
-            Callable<List<Subscription>> subscriptionCallable = new SubscriptionGenerator(start, end, cityFreq, tempFreq, windFreq);
+            Callable<List<Subscription>> subscriptionCallable = new SubscriptionGenerator(start, end, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
             Future<List<Subscription>> subscriptionFuture = executor.submit(subscriptionCallable);
             partialSubscrptionList.add(subscriptionFuture);
         }
@@ -61,7 +61,6 @@ public class SubscriptionManager {
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Total time taken to generate " + subscriptions.size() + " subscription with thread parallelization: " + totalTime + " ms");
-        System.out.println(subscriptions);
         return subscriptions;
     }
 }

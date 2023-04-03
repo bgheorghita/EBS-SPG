@@ -1,16 +1,17 @@
 package uaic.fii;
 
+import uaic.fii.generators.subscriptions.SubscriptionGenerator;
+import uaic.fii.generators.subscriptions.fields.CityFieldGenerator;
+import uaic.fii.managers.PublicationManager;
 import uaic.fii.managers.SubscriptionManager;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 //        PublicationManager publicationManager = new PublicationManager();
-//        publicationManager.generatePublicationsWithThreadParallelization(1000, 5);
-//        publicationManager.generatePublicationsWithoutParallelization(1000);
-//        SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator();
-//        subscriptionGenerator.generateSubscriptions(20, 0.5, 0.25, 0.25);
+//        publicationManager.generatePublicationsWithThreadParallelization(1000000, 4);
+//        publicationManager.generatePublicationsWithoutParallelization(1000000);
         SubscriptionManager subscriptionManager = new SubscriptionManager();
-        subscriptionManager.generateSubscriptionsWithoutParallelization(5, 0.5, 0.25, 0.25);
-        subscriptionManager.generateSubscriptionsWithThreadParallelization(5, 0.5, 0.25, 0.25, 3);
+//        subscriptionManager.generateSubscriptionsWithoutParallelization(12, 0.5, 0.5, 0);
+        subscriptionManager.generateSubscriptionsWithThreadParallelization(10, 0.5, 0.5, 0, 0.1, 1);
     }
 }
