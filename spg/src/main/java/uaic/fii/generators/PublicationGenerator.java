@@ -5,8 +5,9 @@ import uaic.fii.models.PublicationField;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-public class PublicationGenerator implements Runnable {
+public class PublicationGenerator implements Callable<List<Publication>> {
     private final int start;
     private final int end;
 
@@ -16,7 +17,8 @@ public class PublicationGenerator implements Runnable {
     }
 
     @Override
-    public void run() {
+    public List<Publication> call() throws Exception {
+        List<Publication> publications = new ArrayList<>();
         for (int i = start; i < end; i++) {
             PublicationField stationIdField = new PublicationField("stationId", String.valueOf(NumberGenerator.getRandomInt(1, 10)));
             PublicationField cityField = new PublicationField("city", CityGenerator.getRandomCity());
@@ -36,7 +38,9 @@ public class PublicationGenerator implements Runnable {
             publicationFieldList.add(dateField);
 
             Publication publication = new Publication(publicationFieldList);
+            publications.add(publication);
 //            System.out.println(Thread.currentThread().getName() + ": " + publication);
         }
+        return publications;
     }
 }
