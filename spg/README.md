@@ -5,7 +5,7 @@ Tipul de paralelizare: thread-uri
 Factorul de paralelism: se poate folosi maxim 1 thread / CPU Core. Daca programul ruleaza pe un sistem cu CPU ce contine 4 core-uri atunci factorul de paralelism poate sa fie maxim 4 (thread-uri)
 
   
-##  Statistici
+##  Evaluare
   ### Pentru generarearea mesajelor s-a folosit un sistem cu CPU 8 core-uri.
   
 | Publicatii generate  | Factor de paralelizare (threads) | Timp executie (s) |
