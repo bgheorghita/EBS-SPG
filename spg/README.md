@@ -6,7 +6,7 @@ Factorul de paralelism: se poate folosi maxim 1 thread / CPU Core. Daca programu
 
   
 ##  Evaluare
-  ### Pentru generarearea mesajelor s-a folosit un sistem cu CPU 8 core-uri.
+  ### Pentru generarearea mesajelor s-a folosit un sistem cu CPU 8 core-uri (logical cores: 16), 2.3 GHz.
   
 | Publicatii generate  | Factor de paralelizare (threads) | Timp executie (s) |
 | :---                 |     :---:                        |          ---:      |
@@ -74,3 +74,5 @@ Factorul de paralelism: se poate folosi maxim 1 thread / CPU Core. Daca programu
 |17.5 M                 | 0.5     | 0.2     | 0.3   | 0.5                            | 4                      |${\color{red}3.933 - 6.345}$|
 |17.5 M                 | 0.5     | 0.2     | 0.3   | 0.5                            | 5                      |${\color{red}\textbf{6.129 - 6.129}}$|
 |17.5 M                 | 0.5     | 0.2     | 0.3   | 0.5                            | 6                      |${\color{red}4.146 - 6.486}$|
+
+Info: Nu exista spatiu suficient pentru heap (${\color{red}java.lang.OutOfMemoryError: Java \thinspace heap\thinspace space}$) pentru generarea unui numar de subscriptii mai mare sau egal cu 17.5 M, ceea ce duce la performante scazute atunci cand se foloseste paralelizarea si cand eroarea nu apare.
