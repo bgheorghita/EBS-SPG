@@ -6,40 +6,40 @@ Factorul de paralelism: se poate folosi maxim 1 thread / CPU Core. Daca programu
 
   
 ##  Statistici
-  ### Pentru generarearea mesajelor s-a folosit un sistem cu CPU 16 core-uri.
+  ### Pentru generarearea mesajelor s-a folosit un sistem cu CPU 8 core-uri.
   
 | Publicatii generate  | Factor de paralelizare (threads) | Timp executie (s) |
 | :---                 |     :---:                        |          ---:      |
-| 10.000               | - (main thread)                  | 0.088 - 0.096      |
-| 10.000               | 2                                | 0.088 - 0.094      |
-| 10.000               | 3                                | 0.086 - 0.091      |
-| 10.000               | 4                                | 0.087 - 0.090      |
-| 10.000               | 5                                | 0.084 - 0.087      |
-| 10.000               | 6                                | 0.082 - 0.085      |
-| 100.000              | - (main thread)                  | 0.292 - 0.307      |
-| 100.000              | 2                                | 0.288 - 0.304      |
-| 100.000              | 3                                | 0.280 - 0.292      |
-| 100.000              | 4                                | 0.274 - 0.296      |
-| 100.000              | 5                                | 0.281 - 0.298      |
-| 100.000              | 6                                | 0.278 - 0.283      |
-| 1.000.000            | - (main thread)                  | 1.538 - 1.553      |
-| 1.000.000            | 2                                | 1.123 - 1.157      |
-| 1.000.000            | 3                                | 0.949 - 0.993      |
-| 1.000.000            | 4                                | 0.918 - 0.925      |
-| 1.000.000            | 5                                | 0.896 - 0.904      |
-| 1.000.000            | 6                                | 0.877 - 0.892      |
-| 3.000.000            | - (main thread)                  | 4.108 - 4.119      |
-| 3.000.000            | 2                                | 2.777 - 2.843      |
-| 3.000.000            | 3                                | 2.300 - 2.322      |
-| 3.000.000            | 4                                | 2.084 - 2.109      |
-| 3.000.000            | 5                                | 2.017 - 2.058      |
-| 3.000.000            | 6                                | 1.950 - 1.962      |
-| 6.000.000            | - (main thread)                  | 8.302 - 8.321      |
-| 6.000.000            | 2                                | 5.508 - 5.536      |
-| 6.000.000            | 3                                | 4.419 - 4.473      |
-| 6.000.000            | 4                                | 3.937 - 4.028      |
-| 6.000.000            | 5                                | 3.743 - 3.795      |
-| 6.000.000            | 6                                | 3.668 - 3.891      |
+| 10.000               | - (main thread)                  |${\color{orange}0.088 - 0.096}$|
+| 10.000               | 2                                |${\color{green}0.088 - 0.094}$|
+| 10.000               | 3                                |${\color{green}0.086 - 0.091}$|
+| 10.000               | 4                                |${\color{green}0.087 - 0.090}$|
+| 10.000               | 5                                |${\color{green}0.084 - 0.087}$|
+| 10.000               | 6                                |${\color{green}\textbf{0.082 - 0.085}}$|
+| 100.000              | - (main thread)                  |${\color{orange}0.292 - 0.307}$|
+| 100.000              | 2                                |${\color{green}0.288 - 0.304}$|
+| 100.000              | 3                                |${\color{green}0.280 - 0.292}$|
+| 100.000              | 4                                |${\color{green}\textbf{0.274 - 0.296}}$|
+| 100.000              | 5                                |${\color{green}0.281 - 0.298}$|
+| 100.000              | 6                                |${\color{green}0.278 - 0.283}$|
+| 1.000.000            | - (main thread)                  |${\color{orange}1.538 - 1.553}$|
+| 1.000.000            | 2                                |${\color{green}1.123 - 1.157}$|
+| 1.000.000            | 3                                |${\color{green}0.949 - 0.993}$|
+| 1.000.000            | 4                                |${\color{green}0.918 - 0.925}$|
+| 1.000.000            | 5                                |${\color{green}0.896 - 0.904}$|
+| 1.000.000            | 6                                |${\color{green}\textbf{0.877 - 0.892}}$|
+| 3.000.000            | - (main thread)                  |${\color{orange}4.108 - 4.119}$|
+| 3.000.000            | 2                                |${\color{green}2.777 - 2.843}$|
+| 3.000.000            | 3                                |${\color{green}2.300 - 2.322}$|
+| 3.000.000            | 4                                |${\color{green}2.084 - 2.109}$|
+| 3.000.000            | 5                                |${\color{green}2.017 - 2.058}$|
+| 3.000.000            | 6                                |${\color{green}\textbf{1.950 - 1.962}}$|
+| 6.000.000            | - (main thread)                  |${\color{orange}8.302 - 8.321}$|
+| 6.000.000            | 2                                |${\color{green}5.508 - 5.536}$|
+| 6.000.000            | 3                                |${\color{green}4.419 - 4.473}$|
+| 6.000.000            | 4                                |${\color{green}3.937 - 4.028}$|
+| 6.000.000            | 5                                |${\color{green}3.743 - 3.795}$|
+| 6.000.000            | 6                                |${\color{green}\textbf{3.668 - 3.891}}$|
 
 
 | Subscriptii generate  |City Freq|TempFreq|WindFreq|MinFreqEqualOperatorForCityField| Factor de paralelizare | Timp executie (s) |
