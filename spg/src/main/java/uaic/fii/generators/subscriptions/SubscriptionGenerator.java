@@ -102,7 +102,6 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
 
         List<Subscription> subscriptionList = computeSubscriptions(cityFields, tempFields, windFields);
         System.out.println("Generated Subscriptions: " + subscriptionList.size());
-        System.out.println(subscriptionList);
         return subscriptionList;
     }
 

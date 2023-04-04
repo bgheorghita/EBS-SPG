@@ -10,13 +10,15 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class SubscriptionManager {
-    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) {
+    public List<Subscription> generateSubscriptionsWithoutParallelization(int numberOfSubscriptions, double cityFreq, double tempFreq, double windFreq, double minFreqEqualOperatorForCityField) throws IOException {
         SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator(0, numberOfSubscriptions, cityFreq, tempFreq, windFreq, minFreqEqualOperatorForCityField);
         long startTime = System.currentTimeMillis();
         List<Subscription> subscriptions = subscriptionGenerator.call();
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Total time took to generate " + numberOfSubscriptions + " subscriptions without parallelization: " + totalTime + " ms\n");
+
+        saveSubscriptionsToFile(subscriptions);
         return subscriptions;
     }
 
@@ -26,6 +28,9 @@ public class SubscriptionManager {
         if(maxThreadsToUse > numOfCores){
             maxThreadsToUse = numOfCores;
             System.out.println("Info. Max threads has been set to the maximum of the available CPU cores.\n");
+        } else if(maxThreadsToUse < 1){
+            maxThreadsToUse = 1;
+            System.out.println("Info. Max threads has been set to 1.\n");
         }
 
         int maxSubscriptionsPerThread = numberOfSubscriptions / maxThreadsToUse;
@@ -60,16 +65,17 @@ public class SubscriptionManager {
         }
         executor.shutdown();
 
-        saveSubscriptionsToFile(subscriptions);
-
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Total time taken to generate " + subscriptions.size() + " subscription with thread parallelization: " + totalTime + " ms");
+
+        saveSubscriptionsToFile(subscriptions);
         return subscriptions;
     }
 
     private void saveSubscriptionsToFile(List<Subscription> subscriptions) throws IOException {
         String filename = "subscriptions.txt";
+        System.out.println("Saving subscriptions ...");
         new Writer<Subscription>().saveToFile(subscriptions, "subscriptions.txt");
         System.out.println("Subscriptions saved to file " + filename);
     }

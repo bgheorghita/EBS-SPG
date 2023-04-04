@@ -10,13 +10,16 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class PublicationManager {
-    public List<Publication> generatePublicationsWithoutParallelization(int numberOfPublications) {
+    public List<Publication> generatePublicationsWithoutParallelization(int numberOfPublications) throws IOException {
         long startTime = System.currentTimeMillis();
         PublicationGenerator publicationGenerator = new PublicationGenerator(0, numberOfPublications);
         List<Publication> publications = publicationGenerator.call();
+
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Total time taken to generate " + numberOfPublications + " publications without parallelization: " + totalTime + " ms");
+
+        savePublicationsToFile(publications);
         return publications;
     }
 
@@ -26,6 +29,9 @@ public class PublicationManager {
         if(maxThreadsToUse > numOfCores){
             maxThreadsToUse = numOfCores;
             System.out.println("Info. Max threads has been set to the maximum of the available CPU cores.\n");
+        } else if(maxThreadsToUse < 1){
+            maxThreadsToUse = 1;
+            System.out.println("Info. Max threads has been set to 1.\n");
         }
         int maxPublicationsPerThread = numberOfPublications / maxThreadsToUse;
 
@@ -57,17 +63,18 @@ public class PublicationManager {
         }
 
         executor.shutdown();
-        savePublicationsToFile(publications);
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
-
         System.out.println("Total time taken to generate " + numberOfPublications + " publications with thread parallelization: " + totalTime + " ms");
+
+        savePublicationsToFile(publications);
         return publications;
     }
 
     private void savePublicationsToFile(List<Publication> publications) throws IOException {
         String filename = "publications.txt";
+        System.out.println("Saving publications ...");
         new Writer<Publication>().saveToFile(publications, filename);
         System.out.println("Publications saved to file " + filename);
     }
