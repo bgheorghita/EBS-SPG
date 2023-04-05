@@ -76,7 +76,7 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         List<SubscriptionField> windFields;
 
         double maxFreq = Math.max(Math.max(cityFreq, tempFreq), windFreq);
-        double stabilizingFactor = numberOfSubscriptions / (maxFreq * numberOfSubscriptions);
+        double stabilizingFactor = 1 / maxFreq;
         System.out.println("stabilizingFactor = " + stabilizingFactor + " based on maxFreq = " + maxFreq);
 
         double numberOfCityFieldsToGenerate = numberOfSubscriptions * cityFreq * stabilizingFactor;
