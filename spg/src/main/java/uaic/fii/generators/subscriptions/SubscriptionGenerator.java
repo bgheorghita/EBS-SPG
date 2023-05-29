@@ -1,13 +1,13 @@
 package uaic.fii.generators.subscriptions;
 
+import uaic.fii.generators.NumberGenerator;
 import uaic.fii.generators.subscriptions.fields.CityFieldGenerator;
 import uaic.fii.generators.subscriptions.fields.TempFieldGenerator;
 import uaic.fii.generators.subscriptions.fields.WindFieldGenerator;
 import uaic.fii.models.Subscription;
 import uaic.fii.models.SubscriptionField;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 public class SubscriptionGenerator implements Callable<List<Subscription>> {
@@ -27,38 +27,82 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         this.minFreqEqualOperatorForCityField = minFreqEqualOperatorForCityField;
     }
 
-    private List<Subscription> computeSubscriptions(List<SubscriptionField> cityFields, List<SubscriptionField> tempFields, List<SubscriptionField> windFields){
-        int sizeCityFields = cityFields.size();
-        int sizeTempFields = tempFields.size();
-        int sizeWindFields = windFields.size();
-        int maxPossibleSubscriptions = Math.max(Math.max(sizeCityFields, sizeTempFields), sizeWindFields);
-
+    private List<Subscription> computeSubscriptions(int noOfSubs, List<SubscriptionField> cityFields, List<SubscriptionField> tempFields, List<SubscriptionField> windFields){
         List<Subscription> subscriptions = new ArrayList<>();
 
-        for(int i=0; i<maxPossibleSubscriptions; i++){
-            boolean hasCityField = i < sizeCityFields;
-            boolean hasTempField = i < sizeTempFields;
-            boolean hasWindField = i < sizeWindFields;
-
-            List<SubscriptionField> subscriptionFields = new ArrayList<>();
-
-            if(hasCityField){
-                subscriptionFields.add(cityFields.get(i));
-            }
-
-            if(hasTempField){
-                subscriptionFields.add(tempFields.get(i));
-            }
-
-            if(hasWindField){
-                subscriptionFields.add(windFields.get(i));
-            }
-
-            Subscription subscription = new Subscription(subscriptionFields);
-            subscriptions.add(subscription);
+        for(int i=0; i<noOfSubs; i++){
+            SubscriptionField cityField = cityFields.get(i);
+            SubscriptionField tempField = tempFields.get(i);
+            SubscriptionField windField = windFields.get(i);
+            subscriptions.add(new Subscription(List.of(cityField, tempField, windField)));
         }
+
+        // remove extra fields to fit the given frequencies
+        int cityFieldsToRemove = (int) (noOfSubs - noOfSubs * cityFreq);
+        int tempFieldsToRemove = (int) (noOfSubs - noOfSubs * tempFreq);
+        int windFieldsToRemove = (int) (noOfSubs - noOfSubs * windFreq);
+
+        int cityRemoved = 0;
+        int tempRemoved = 0;
+        int windRemoved = 0;
+
+        Set<Subscription> visitedSubscriptions = new HashSet<>();
+        while (cityRemoved < cityFieldsToRemove){
+            int random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+            Subscription subscription = subscriptions.get(random);
+
+            while (visitedSubscriptions.contains(subscription)){
+                random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+                subscription = subscriptions.get(random);
+            }
+            visitedSubscriptions.add(subscription);
+
+            if(subscription.getFieldListSize() > 1){
+                SubscriptionField cityField = subscription.getSubscriptionField("city");
+                subscription.removeSubscriptionField(cityField);
+                cityRemoved++;
+            }
+        }
+
+        visitedSubscriptions = new HashSet<>();
+        while (tempRemoved < tempFieldsToRemove){
+            int random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+            Subscription subscription = subscriptions.get(random);
+
+            while (visitedSubscriptions.contains(subscription)){
+                random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+                subscription = subscriptions.get(random);
+            }
+            visitedSubscriptions.add(subscription);
+
+            if(subscription.getFieldListSize() > 1){
+                SubscriptionField tempField = subscription.getSubscriptionField("temp");
+                subscription.removeSubscriptionField(tempField);
+                tempRemoved++;
+            }
+        }
+
+        visitedSubscriptions = new HashSet<>();
+        while (windRemoved < windFieldsToRemove){
+            int random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+            Subscription subscription = subscriptions.get(random);
+
+            while (visitedSubscriptions.contains(subscription)){
+                random = NumberGenerator.getRandomInt(0, noOfSubs-1);
+                subscription = subscriptions.get(random);
+            }
+
+            visitedSubscriptions.add(subscription);
+            if(subscription.getFieldListSize() > 1){
+                SubscriptionField windField = subscription.getSubscriptionField("wind");
+                subscription.removeSubscriptionField(windField);
+                windRemoved++;
+            }
+        }
+
         return subscriptions;
     }
+
 
     @Override
     public List<Subscription> call() {
@@ -75,13 +119,9 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         List<SubscriptionField> tempFields;
         List<SubscriptionField> windFields;
 
-        double maxFreq = Math.max(Math.max(cityFreq, tempFreq), windFreq);
-        double stabilizingFactor = 1 / maxFreq;
-        System.out.println("stabilizingFactor = " + stabilizingFactor + " based on maxFreq = " + maxFreq);
-
-        double numberOfCityFieldsToGenerate = numberOfSubscriptions * cityFreq * stabilizingFactor;
-        double numberOfTempFieldsToGenerate = numberOfSubscriptions * tempFreq * stabilizingFactor;
-        double numberOfWindFieldsToGenerate = numberOfSubscriptions * windFreq * stabilizingFactor;
+        double numberOfCityFieldsToGenerate = numberOfSubscriptions * cityFreq;
+        double numberOfTempFieldsToGenerate = numberOfSubscriptions * tempFreq;
+        double numberOfWindFieldsToGenerate = numberOfSubscriptions * windFreq;
 
         int sizeOfCityFields = (int)numberOfCityFieldsToGenerate;
         int sizeOfTempFields = (int)numberOfTempFieldsToGenerate;
@@ -92,16 +132,17 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
         System.out.println("Fields Lost And Replaced Due To Conversion: " + (totalFieldsSizeDouble - totalFieldsSizeInt));
         System.out.println();
 
-        cityFields = new CityFieldGenerator(sizeOfCityFields, minFreqEqualOperatorForCityField).generateCityFields();
-        tempFields = new TempFieldGenerator(sizeOfTempFields).generateTempFields();
-        windFields = new WindFieldGenerator(sizeOfWindFields).generateWindFields();
+        cityFields = new CityFieldGenerator(numberOfSubscriptions, minFreqEqualOperatorForCityField).generateCityFields();
+        tempFields = new TempFieldGenerator(numberOfSubscriptions).generateTempFields();
+        windFields = new WindFieldGenerator(numberOfSubscriptions).generateWindFields();
         System.out.println();
         System.out.println("City Fields Generated: " + cityFields.size());
         System.out.println("Temp Fields Generated: " + tempFields.size());
         System.out.println("Wind Fields Generated: " + windFields.size());
 
-        List<Subscription> subscriptionList = computeSubscriptions(cityFields, tempFields, windFields);
+        List<Subscription> subscriptionList = computeSubscriptions(numberOfSubscriptions, cityFields, tempFields, windFields);
         System.out.println("Generated Subscriptions: " + subscriptionList.size());
+
         return subscriptionList;
     }
 
@@ -124,10 +165,10 @@ public class SubscriptionGenerator implements Callable<List<Subscription>> {
             windFreq = 0;
         }
 
-        if((cityFreq + tempFreq + windFreq) != 1)   {
-            cityFreq = 0.33;
-            tempFreq = 0.33;
-            windFreq = 0.34;
+        if((cityFreq + tempFreq + windFreq) < 1)   {
+            cityFreq = 1;
+            tempFreq = 1;
+            windFreq = 1;
         }
     }
 }
